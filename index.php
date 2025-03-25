@@ -382,6 +382,9 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="library-tab" data-bs-toggle="tab" data-bs-target="#library" type="button" role="tab" aria-controls="library" aria-selected="false">Library</button>
                             </li>
+							<li class="nav-item" role="presentation">
+    <button class="nav-link" id="mojang-tab" data-bs-toggle="tab" data-bs-target="#mojang" type="button" role="tab" aria-controls="mojang" aria-selected="false">Mojang</button>
+</li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -436,7 +439,78 @@
                                     </label>
                                 </div>
                             </div>
-                            
+							
+							
+    <div class="tab-pane fade" id="mojang" role="tabpanel" aria-labelledby="mojang-tab">
+    <div class="mb-3">
+        <label for="minecraft-username" class="form-label">Minecraft Username</label>
+        <div class="input-group">
+            <input type="text" class="form-control" id="minecraft-username" placeholder="Enter Minecraft username">
+            <button class="btn btn-primary" id="fetch-mojang-skin">
+                <i class="fas fa-search me-1"></i> Fetch Skin
+            </button>
+        </div>
+        <div class="form-text">Enter a Minecraft username to fetch their official skin from Mojang servers</div>
+    </div>
+    
+    <div id="mojang-result" class="mb-3 d-none">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-check-circle me-1"></i> Skin found!</span>
+                <span class="badge bg-light text-success" id="mojang-save-status">Saved to Library</span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img id="mojang-preview" src="" alt="Skin Preview" class="me-3" style="width: 64px; height: 64px; image-rendering: pixelated;">
+                    <div>
+                        <h5 id="mojang-username" class="card-title mb-0"></h5>
+                        <p id="mojang-model-type" class="text-muted mb-0"></p>
+                    </div>
+                </div>
+                <button id="load-mojang-skin" class="btn btn-primary">
+                    <i class="fas fa-user me-1"></i> Load This Skin
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="mojang-error" class="alert alert-danger d-none">
+        <i class="fas fa-exclamation-circle me-1"></i>
+        <span id="mojang-error-message"></span>
+    </div>
+    
+    <div class="card mt-3">
+        <div class="card-header">
+            Recently Fetched Players
+        </div>
+        <div class="card-body">
+            <div id="recent-players" class="d-flex flex-wrap gap-2 mt-2">
+                <!-- Recent players will be added here by JavaScript -->
+                <div class="text-muted" id="no-recent-players">No players fetched yet</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mt-3">
+        <div class="card-header">
+            Popular Minecraft Players
+        </div>
+        <div class="card-body">
+            <div class="popular-players d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Notch">Notch</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="jeb_">jeb_</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Dinnerbone">Dinnerbone</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Dream">Dream</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="GeorgeNotFound">GeorgeNotFound</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Technoblade">Technoblade</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Ph1LzA">Ph1LzA</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Sapnap">Sapnap</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="TommyInnit">TommyInnit</button>
+                <button class="btn btn-sm btn-outline-primary popular-player" data-username="Tubbo">Tubbo</button>
+            </div>
+        </div>
+    </div>
+</div>
                             <!-- Library Tab -->
                             <div class="tab-pane fade" id="library" role="tabpanel" aria-labelledby="library-tab">
                                 <div class="mb-3">
@@ -572,7 +646,527 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+	<script src="skin-editor.js"></script>
+	<script src="skin-editor-patch.js"></script>
+	<script src="fix-double-canvas.js"></script>
+	<script src="comprehensive-editor-fix.js"></script>
+	<script src="3d-model-repair.js"></script>
+<script src="drawing-preview-fix.js"></script>
+<script src="direct-drawing-fix.js"></script>
+<script>
+// Add this to the bottom of your index.php file before the closing </body> tag
+
+// Load skin-editor.js script
+// Add this code to the end of your index.php file, just before the closing </body> tag
+
+// Make sure we have the complete model shown in the editor
+document.addEventListener('DOMContentLoaded', function() {
+    // Load skin-editor.js script if not already loaded
+    if (!document.querySelector('script[src="skin-editor.js"]')) {
+        const editorScript = document.createElement('script');
+        editorScript.src = 'skin-editor.js';
+        document.body.appendChild(editorScript);
+    }
     
+    // Initialize the editor when the button is clicked
+    const editButton = document.getElementById('edit-skin-button');
+    if (!editButton) {
+        // Create the edit button if it doesn't exist yet
+        const controlsContainer = document.querySelector('.d-flex.flex-wrap.gap-2.mt-3');
+        if (controlsContainer) {
+            const editButton = document.createElement('button');
+            editButton.id = 'edit-skin-button';
+            editButton.className = 'btn btn-warning';
+            editButton.innerHTML = '<i class="fas fa-paint-brush me-1"></i> Edit Skin';
+            editButton.onclick = initSkinEditor;
+            
+            // Insert before the download button
+            const downloadButton = document.getElementById('download-skin');
+            controlsContainer.insertBefore(editButton, downloadButton);
+        }
+    } else {
+        // If the button already exists, just add the click handler
+        editButton.onclick = initSkinEditor;
+    }
+});
+
+// Helper function to initialize the skin editor
+function initSkinEditor() {
+    if (!currentSkinTexture) {
+        alert('Please load a skin first before editing.');
+        return;
+    }
+    
+    // Make sure the SkinEditor object is available
+    if (typeof SkinEditor === 'undefined') {
+        // If not available, wait for the script to load and retry
+        console.log('Waiting for SkinEditor to load...');
+        setTimeout(function() {
+            if (typeof SkinEditor !== 'undefined') {
+                console.log('SkinEditor now available, initializing...');
+                prepareSkinEditor();
+            } else {
+                alert('Failed to load the skin editor. Please refresh the page and try again.');
+            }
+        }, 1000);
+    } else {
+        prepareSkinEditor();
+    }
+}
+
+// Helper function to prepare the skin editor with correct data
+function prepareSkinEditor() {
+    // Expose necessary variables to the global scope for the editor
+    window.currentSkinTexture = currentSkinTexture;
+    window.createCharacterModel = createCharacterModel;
+    window.detectSkinFormat = detectSkinFormat;
+    window.skinType = skinType;
+    
+    // Define the correct UV mappings if not already defined
+    if (typeof uvMappings === 'undefined') {
+        window.uvMappings = {
+            head: {
+                base: {
+                    up:    [8, 0, 16, 8],
+                    down:  [16, 0, 24, 8],
+                    right: [0, 8, 8, 16],
+                    left:  [16, 8, 24, 16],
+                    front: [8, 8, 16, 16],
+                    back:  [24, 8, 32, 16]
+                },
+                overlay: {
+                    up:    [40, 0, 48, 8],
+                    down:  [48, 0, 56, 8],
+                    right: [32, 8, 40, 16],
+                    left:  [48, 8, 56, 16],
+                    front: [40, 8, 48, 16],
+                    back:  [56, 8, 64, 16]
+                }
+            },
+            body: {
+                base: {
+                    up:    [20, 16, 28, 20],
+                    down:  [28, 16, 36, 20],
+                    right: [16, 20, 20, 32],
+                    left:  [28, 20, 32, 32],
+                    front: [20, 20, 28, 32],
+                    back:  [32, 20, 40, 32]
+                },
+                overlay: {
+                    up:    [20, 32, 28, 36],
+                    down:  [28, 32, 36, 36],
+                    right: [16, 36, 20, 48],
+                    left:  [28, 36, 32, 48],
+                    front: [20, 36, 28, 48],
+                    back:  [32, 36, 40, 48]
+                }
+            },
+            rightArm: {
+                base: {
+                    up:    [44, 16, 48, 20],
+                    down:  [48, 16, 52, 20],
+                    right: [40, 20, 44, 32],
+                    left:  [48, 20, 52, 32],
+                    front: [44, 20, 48, 32],
+                    back:  [52, 20, 56, 32]
+                },
+                overlay: {
+                    up:    [44, 32, 48, 36],
+                    down:  [48, 32, 52, 36],
+                    right: [40, 36, 44, 48],
+                    left:  [48, 36, 52, 48],
+                    front: [44, 36, 48, 48],
+                    back:  [52, 36, 56, 48]
+                }
+            },
+            leftArm: {
+                base: {
+                    up:    [36, 48, 40, 52],
+                    down:  [40, 48, 44, 52],
+                    right: [32, 52, 36, 64],
+                    left:  [40, 52, 44, 64],
+                    front: [36, 52, 40, 64],
+                    back:  [44, 52, 48, 64]
+                },
+                overlay: {
+                    up:    [52, 48, 56, 52],
+                    down:  [56, 48, 60, 52],
+                    right: [48, 52, 52, 64],
+                    left:  [56, 52, 60, 64],
+                    front: [52, 52, 56, 64],
+                    back:  [60, 52, 64, 64]
+                }
+            },
+            rightLeg: {
+                base: {
+                    up:    [4, 16, 8, 20],
+                    down:  [8, 16, 12, 20],
+                    right: [0, 20, 4, 32],
+                    left:  [8, 20, 12, 32],
+                    front: [4, 20, 8, 32],
+                    back:  [12, 20, 16, 32]
+                },
+                overlay: {
+                    up:    [4, 32, 8, 36],
+                    down:  [8, 32, 12, 36],
+                    right: [0, 36, 4, 48],
+                    left:  [8, 36, 12, 48],
+                    front: [4, 36, 8, 48],
+                    back:  [12, 36, 16, 48]
+                }
+            },
+            leftLeg: {
+                base: {
+                    up:    [20, 48, 24, 52],
+                    down:  [24, 48, 28, 52],
+                    right: [16, 52, 20, 64],
+                    left:  [24, 52, 28, 64],
+                    front: [20, 52, 24, 64],
+                    back:  [28, 52, 32, 64]
+                },
+                overlay: {
+                    up:    [4, 48, 8, 52],
+                    down:  [8, 48, 12, 52],
+                    right: [0, 52, 4, 64],
+                    left:  [8, 52, 12, 64],
+                    front: [4, 52, 8, 64],
+                    back:  [12, 52, 16, 64]
+                }
+            }
+        };
+    } else {
+        window.uvMappings = uvMappings;
+    }
+    
+    // Set up the skin texture for editing
+    if (typeof SkinEditor.open === 'function') {
+        console.log('Opening skin editor...');
+        
+        // Create editor UI if it doesn't exist yet
+        if (!document.getElementById('skin-editor-container')) {
+            createSkinEditorUI();
+        }
+        
+        // Initialize the editor and make sure it's set up correctly
+        if (!SkinEditor.isInitialized) {
+            SkinEditor.initialize();
+            SkinEditor.isInitialized = true;
+        }
+        
+        // Open the editor with the current skin texture
+        SkinEditor.open(currentSkinTexture);
+    } else {
+        console.error('SkinEditor.open is not a function');
+        alert('The skin editor could not be initialized properly. Please refresh the page and try again.');
+    }
+}
+
+// Patch the createEditableCuboid method to ensure all body parts are shown
+if (typeof SkinEditor !== 'undefined') {
+    const originalCreateEditableCuboid = SkinEditor.createEditableCuboid;
+    
+    SkinEditor.createEditableCuboid = function(width, height, depth, x, y, z, texture, uvMap, partName, transparent = false) {
+        console.log(`Creating editable part: ${partName}`);
+        console.log('UV Map:', uvMap);
+        
+        return originalCreateEditableCuboid.call(
+            this, width, height, depth, x, y, z, texture, uvMap, partName, transparent
+        );
+    };
+}
+
+// Patch the createSkinModel method to ensure all body parts are created
+if (typeof SkinEditor !== 'undefined') {
+    SkinEditor.createSkinModel = function(texture) {
+        // Create a group to hold all parts
+        this.editorModel = new THREE.Group();
+        
+        // Get current skin type from global variable
+        const currentSkinType = window.skinType || 'default';
+        console.log('Creating skin model with type:', currentSkinType);
+        
+        // Determine the arm width
+        const armWidth = currentSkinType === 'slim' ? 3 : 4;
+        
+        // Create the head
+        this.createEditableCuboid(
+            8, 8, 8,        // width, height, depth
+            0, 28, 0,       // position x, y, z
+            texture,        // texture
+            window.uvMappings.head.base,  // UV mapping
+            'head'          // part name
+        );
+        
+        // HEAD OVERLAY
+        this.createEditableCuboid(
+            8.5, 8.5, 8.5,  // slightly larger
+            0, 28, 0,       // same position
+            texture,
+            window.uvMappings.head.overlay,
+            'head-overlay',
+            true            // transparent
+        );
+        
+        // BODY
+        this.createEditableCuboid(
+            8, 12, 4,
+            0, 18, 0,
+            texture,
+            window.uvMappings.body.base,
+            'body'
+        );
+        
+        // BODY OVERLAY
+        this.createEditableCuboid(
+            8.5, 12.5, 4.5,
+            0, 18, 0,
+            texture,
+            window.uvMappings.body.overlay,
+            'body-overlay',
+            true
+        );
+        
+        // RIGHT ARM
+        this.createEditableCuboid(
+            armWidth, 12, 4,
+            -(4 + armWidth/2), 18, 0,
+            texture,
+            window.uvMappings.rightArm.base,
+            'right-arm'
+        );
+        
+        // RIGHT ARM OVERLAY
+        this.createEditableCuboid(
+            armWidth + 0.5, 12.5, 4.5,
+            -(4 + armWidth/2), 18, 0,
+            texture,
+            window.uvMappings.rightArm.overlay,
+            'right-arm-overlay',
+            true
+        );
+        
+        // LEFT ARM
+        this.createEditableCuboid(
+            armWidth, 12, 4,
+            4 + armWidth/2, 18, 0,
+            texture,
+            window.uvMappings.leftArm.base,
+            'left-arm'
+        );
+        
+        // LEFT ARM OVERLAY
+        this.createEditableCuboid(
+            armWidth + 0.5, 12.5, 4.5,
+            4 + armWidth/2, 18, 0,
+            texture,
+            window.uvMappings.leftArm.overlay,
+            'left-arm-overlay',
+            true
+        );
+        
+        // RIGHT LEG
+        this.createEditableCuboid(
+            4, 12, 4,
+            -2, 6, 0,
+            texture,
+            window.uvMappings.rightLeg.base,
+            'right-leg'
+        );
+        
+        // RIGHT LEG OVERLAY
+        this.createEditableCuboid(
+            4.5, 12.5, 4.5,
+            -2, 6, 0,
+            texture,
+            window.uvMappings.rightLeg.overlay,
+            'right-leg-overlay',
+            true
+        );
+        
+        // LEFT LEG
+        this.createEditableCuboid(
+            4, 12, 4,
+            2, 6, 0,
+            texture,
+            window.uvMappings.leftLeg.base,
+            'left-leg'
+        );
+        
+        // LEFT LEG OVERLAY
+        this.createEditableCuboid(
+            4.5, 12.5, 4.5,
+            2, 6, 0,
+            texture,
+            window.uvMappings.leftLeg.overlay,
+            'left-leg-overlay',
+            true
+        );
+        
+        // Add the model to the scene
+        this.scene.add(this.editorModel);
+        
+        console.log('Editor model created with all body parts');
+    };
+}
+
+// This ensures the editor works correctly with model patching
+window.addEventListener('load', function() {
+    // Check if SkinEditor is loaded
+    if (typeof SkinEditor !== 'undefined') {
+        console.log('SkinEditor found, patching methods...');
+        
+        // Record the skin editor is properly initialized
+        SkinEditor.isInitialized = false;
+    }
+});
+// Standalone Mojang skin fetcher implementation
+(function() {
+    // DOM elements
+    const fetchButton = document.getElementById('fetch-mojang-skin');
+    const usernameInput = document.getElementById('minecraft-username');
+    const resultContainer = document.getElementById('mojang-result');
+    const errorContainer = document.getElementById('mojang-error');
+    const errorMessage = document.getElementById('mojang-error-message');
+    const usernameDisplay = document.getElementById('mojang-username');
+    const skinPreview = document.getElementById('mojang-preview');
+    const modelType = document.getElementById('mojang-model-type');
+    const loadSkinButton = document.getElementById('load-mojang-skin');
+    const popularButtons = document.querySelectorAll('.popular-player');
+    
+    // Skin data storage
+    let currentSkinData = null;
+    
+    // Function to show loading
+    function showLoading(message) {
+        const loadingElement = document.getElementById('loading-message');
+        if (loadingElement) {
+            loadingElement.innerHTML = `
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">${message}</p>
+            `;
+            loadingElement.style.display = 'block';
+        }
+    }
+    
+    // Function to hide loading
+    function hideLoading() {
+        const loadingElement = document.getElementById('loading-message');
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
+    }
+    
+    // Function to show error
+    function showError(message) {
+        if (errorContainer && errorMessage) {
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('d-none');
+        } else {
+            alert("Error: " + message);
+        }
+    }
+    
+    // Function to hide error
+    function hideError() {
+        if (errorContainer) {
+            errorContainer.classList.add('d-none');
+        }
+    }
+    
+    // Function to fetch Mojang skin
+    function fetchMojangSkin(username) {
+        // Validate username
+        if (!username) {
+            showError('Please enter a Minecraft username.');
+            return;
+        }
+        
+        // Reset UI
+        hideError();
+        if (resultContainer) {
+            resultContainer.classList.add('d-none');
+        }
+        
+        // Show loading
+        showLoading('Fetching skin from Mojang...');
+        
+        // Make API request
+        fetch('fetch-mojang-api.php?username=' + encodeURIComponent(username))
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                hideLoading();
+                
+                if (data.success) {
+                    // Store data
+                    currentSkinData = data;
+                    
+                    // Update UI
+                    if (usernameDisplay) usernameDisplay.textContent = data.username;
+                    if (skinPreview) skinPreview.src = data.url;
+                    if (modelType) modelType.textContent = data.isSlim ? 'Slim (Alex) model' : 'Default (Steve) model';
+                    
+                    // Show result
+                    if (resultContainer) resultContainer.classList.remove('d-none');
+                } else {
+                    showError(data.message || 'Failed to fetch skin from Mojang.');
+                }
+            })
+            .catch(function(error) {
+                hideLoading();
+                console.error('Error:', error);
+                showError('An error occurred while connecting to the server.');
+            });
+    }
+    
+    // Function to load the fetched skin
+    function loadMojangSkin() {
+        if (!currentSkinData) {
+            showError('No skin data available. Please fetch a skin first.');
+            return;
+        }
+        
+        if (typeof loadSkin === 'function') {
+            loadSkin(currentSkinData.url, currentSkinData.isSlim ? 'slim' : 'default');
+        } else {
+            showError('Skin loading function not available.');
+        }
+    }
+    
+    // Set up event listeners
+    if (fetchButton && usernameInput) {
+        fetchButton.addEventListener('click', function() {
+            fetchMojangSkin(usernameInput.value.trim());
+        });
+        
+        usernameInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                fetchMojangSkin(this.value.trim());
+            }
+        });
+    }
+    
+    if (loadSkinButton) {
+        loadSkinButton.addEventListener('click', loadMojangSkin);
+    }
+    
+    // Set up popular player buttons
+    if (popularButtons.length > 0) {
+        popularButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const username = this.getAttribute('data-username');
+                if (usernameInput) usernameInput.value = username;
+                fetchMojangSkin(username);
+            });
+        });
+    }
+    
+    console.log('Mojang skin fetcher initialized');
+})();
+</script>
     <script>
         // Debounce function to prevent too many renders
         function debounce(func, wait) {
@@ -607,7 +1201,8 @@
         const noTexturesMessage = document.getElementById('no-textures-message');
         const slimModelCheckbox = document.getElementById('slim-model');
         const urlSlimModelCheckbox = document.getElementById('url-slim-model');
-        
+                let currentMojangData = null;
+let recentPlayers = [];
         // Three.js variables
         let scene, camera, renderer;
         let playerModel;
@@ -634,19 +1229,296 @@
         
         // Texture library (stored in localStorage)
         let textureLibrary = [];
+
+
+// Function to load and save the fetched skin
+function loadMojangSkin() {
+    if (!currentSkinData) {
+        showError('No skin data available. Please fetch a skin first.');
+        return;
+    }
+    
+    // First, load the skin for preview
+    if (typeof loadSkin === 'function') {
+        loadSkin(currentSkinData.url, currentSkinData.isSlim ? 'slim' : 'default');
         
-        // Initialize the app
-        function init() {
-            loadTextureLibrary();
-            initScene();
-            initBackgrounds();
-            initPresets();
-            initEventListeners();
+        // Then make sure it's saved in the texture library
+        if (typeof addTexture === 'function') {
+            // Create a name for the skin
+            const name = currentSkinData.username + "'s Skin";
             
-            // Start with Steve skin
-            loadSkin(officialSkins[0].url, officialSkins[0].type);
+            // Add the skin to the texture library
+            addTexture(
+                name,
+                currentSkinData.url,
+                'custom',
+                currentSkinData.isSlim ? 'slim' : 'default'
+            );
+            
+            // Show a success message
+            if (typeof showMessage === 'function') {
+                showMessage('success', `Saved ${currentSkinData.username}'s skin to your library!`);
+            } else {
+                alert(`Saved ${currentSkinData.username}'s skin to your library!`);
+            }
+        } else {
+            console.warn("addTexture function not available. Skin loaded but not saved to library.");
         }
+    } else {
+        showError('Skin loading function not available.');
+    }
+}
+
+// Show Mojang error message
+function showMojangError(message) {
+    const errorElement = document.getElementById('mojang-error');
+    const errorMessageElement = document.getElementById('mojang-error-message');
+    
+    if (errorElement && errorMessageElement) {
+        errorMessageElement.textContent = message;
+        errorElement.classList.remove('d-none');
+    }
+}
+
+// Add to recent players
+function addToRecentPlayers(playerData) {
+    // Check if player already exists
+    const existingIndex = recentPlayers.findIndex(p => p.username.toLowerCase() === playerData.username.toLowerCase());
+    
+    if (existingIndex !== -1) {
+        // Remove existing entry
+        recentPlayers.splice(existingIndex, 1);
+    }
+    
+    // Add to the beginning of the array
+    recentPlayers.unshift(playerData);
+    
+    // Keep only the last 10 players
+    if (recentPlayers.length > 10) {
+        recentPlayers = recentPlayers.slice(0, 10);
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('recent-minecraft-players', JSON.stringify(recentPlayers));
+    
+    // Update UI
+    updateRecentPlayersUI();
+}
+
+// Load recent players from localStorage
+function loadRecentPlayers() {
+    const savedPlayers = localStorage.getItem('recent-minecraft-players');
+    
+    if (savedPlayers) {
+        try {
+            recentPlayers = JSON.parse(savedPlayers);
+            updateRecentPlayersUI();
+        } catch (e) {
+            console.error('Error parsing recent players:', e);
+            recentPlayers = [];
+        }
+    }
+}
+
+// Update recent players UI
+function updateRecentPlayersUI() {
+    const container = document.getElementById('recent-players');
+    const noRecentMessage = document.getElementById('no-recent-players');
+    
+    if (!container) return;
+    
+    if (recentPlayers.length === 0) {
+        if (noRecentMessage) noRecentMessage.style.display = 'block';
+        return;
+    }
+    
+    // Hide no players message
+    if (noRecentMessage) noRecentMessage.style.display = 'none';
+    
+    // Clear existing players except the no players message
+    Array.from(container.children).forEach(child => {
+        if (child !== noRecentMessage) {
+            child.remove();
+        }
+    });
+    
+    // Add players
+    recentPlayers.forEach(player => {
+        const playerEl = document.createElement('div');
+        playerEl.className = 'recent-player';
+        playerEl.style.cursor = 'pointer';
+        playerEl.innerHTML = `
+            <img src="${player.url}" alt="${player.username}" 
+                title="${player.username} (${player.isSlim ? 'Slim' : 'Default'})" 
+                style="width: 40px; height: 40px; image-rendering: pixelated; border-radius: 4px;">
+        `;
         
+        playerEl.addEventListener('click', () => {
+            // Set the username in the input field
+            document.getElementById('minecraft-username').value = player.username;
+            
+            // Trigger the fetch
+            fetchMojangSkin(player.username);
+        });
+        
+        container.appendChild(playerEl);
+    });
+}
+function fetchMojangSkin(username) {
+    console.log("Fetch Mojang skin function called for:", username);
+    
+    if (!username) {
+        showMojangError('Please enter a Minecraft username.');
+        return;
+    }
+    
+    // Show loading indicator
+    showLoading('Fetching skin from Mojang...');
+    
+    // Hide previous results
+    document.getElementById('mojang-result').classList.add('d-none');
+    document.getElementById('mojang-error').classList.add('d-none');
+    
+    // Fetch from our proxy API
+    fetch('fetch-mojang-api.php?username=' + encodeURIComponent(username))
+        .then(response => {
+            console.log("API response received", response);
+            return response.json();
+        })
+        .then(data => {
+            console.log("API data:", data);
+            hideLoading();
+            
+            if (data.success) {
+                // Store the current Mojang data
+                currentMojangData = data;
+                
+                // Update result UI
+                document.getElementById('mojang-username').textContent = data.username;
+                document.getElementById('mojang-preview').src = data.url;
+                document.getElementById('mojang-model-type').textContent = 
+                    data.isSlim ? 'Slim (Alex) model' : 'Default (Steve) model';
+                
+                // Show result UI
+                document.getElementById('mojang-result').classList.remove('d-none');
+                
+                // Add to recent players
+                addToRecentPlayers({
+                    username: data.username,
+                    url: data.url,
+                    isSlim: data.isSlim
+                });
+            } else {
+                showMojangError(data.message || 'Failed to fetch skin from Mojang.');
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            console.error('Error fetching Mojang skin:', error);
+            showMojangError('An error occurred while connecting to the server.');
+        });
+}
+
+// Fixed initMojangTab function
+function initMojangTab() {
+    console.log("Initializing Mojang tab");
+    
+    // Fetch button
+    const fetchMojangBtn = document.getElementById('fetch-mojang-skin');
+    const minecraftUsernameInput = document.getElementById('minecraft-username');
+    
+    if (fetchMojangBtn && minecraftUsernameInput) {
+        console.log("Found fetch button and input field");
+        
+        fetchMojangBtn.addEventListener('click', function() {
+            console.log("Fetch button clicked");
+            const username = minecraftUsernameInput.value.trim();
+            fetchMojangSkin(username);
+        });
+        
+        // Also trigger on Enter key
+        minecraftUsernameInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                console.log("Enter key pressed in username field");
+                const username = this.value.trim();
+                fetchMojangSkin(username);
+            }
+        });
+    } else {
+        console.warn("Could not find fetch button or input field");
+    }
+    
+    // Load Mojang skin button
+    const loadMojangSkinBtn = document.getElementById('load-mojang-skin');
+    if (loadMojangSkinBtn) {
+        loadMojangSkinBtn.addEventListener('click', loadMojangSkin);
+    } else {
+        console.warn("Could not find load Mojang skin button");
+    }
+    
+    // Popular player buttons
+    const popularPlayerBtns = document.querySelectorAll('.popular-player');
+    popularPlayerBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const username = this.getAttribute('data-username');
+            console.log("Popular player clicked:", username);
+            minecraftUsernameInput.value = username;
+            fetchMojangSkin(username);
+        });
+    });
+    
+    // Load recent players from localStorage
+    loadRecentPlayers();
+}
+
+// Fixed Show Mojang Error function
+function showMojangError(message) {
+    console.log("Showing Mojang error:", message);
+    const errorElement = document.getElementById('mojang-error');
+    const errorMessageElement = document.getElementById('mojang-error-message');
+    
+    if (errorElement && errorMessageElement) {
+        errorMessageElement.textContent = message;
+        errorElement.classList.remove('d-none');
+    } else {
+        console.warn("Could not find error elements");
+        alert("Error: " + message);
+    }
+}
+
+// Add this to your init function or replace the existing call
+function init() {
+    // Initialize variables
+    currentSkinId = null;
+    currentMojangData = null;
+    recentPlayers = [];
+    textureLibrary = [];
+    
+    // Initialize UI components
+    initScene();
+    initBackgrounds();
+    initPresets();
+    initEventListeners();
+    initCape();
+    initMojangTab(); // Make sure this is called
+    addSkinFormatControls();
+    addVotingStyles();
+    
+    // Fetch skins from server
+    fetchSkins();
+    
+    // Start with Steve skin
+    loadSkin(officialSkins[0].url, officialSkins[0].type);
+    
+    // Initialize skin format detection
+    updateFormatInfo();
+    
+    console.log("Initialization complete");
+}
+
+
+
+
         // Load texture library from localStorage
         function loadTextureLibrary() {
             const savedTextures = localStorage.getItem('minecraft-textures');
@@ -1258,23 +2130,23 @@ function createCharacterModel(skinTexture) {
     // Define UV Mappings - focus on fixing the modern format
     const uvMappings = {
         head: {
-            base: {
-                up:    [8, 0, 16, 8],
-                down:  [16, 0, 24, 8],
-                right: [0, 8, 8, 16],
-                left:  [16, 8, 24, 16],
-                front: [8, 8, 16, 16],
-                back:  [24, 8, 32, 16]
-            },
-            overlay: {
-                up:    [40, 0, 48, 8],
-                down:  [48, 0, 56, 8],
-                right: [32, 8, 40, 16],
-                left:  [48, 8, 56, 16],
-                front: [40, 8, 48, 16],
-                back:  [56, 8, 64, 16]
-            }
+        base: {
+            up:    [8, 0, 16, 8],
+            down:  [16, 0, 24, 8],
+            right: [0, 8, 8, 16],
+            left:  [16, 8, 24, 16],
+            front: [8, 8, 16, 16],
+            back:  [24, 8, 32, 16]
         },
+        overlay: {
+            up:    [40, 0, 48, 8],
+            down:  [48, 0, 56, 8],
+            right: [32, 8, 40, 16],
+            left:  [48, 8, 56, 16],
+            front: [40, 8, 48, 16],
+            back:  [56, 8, 64, 16]
+        }
+    },
         body: {
             base: {
                 up:    [20, 16, 28, 20],
@@ -2698,7 +3570,247 @@ function handleUrlInput() {
     uploadSkinFromUrl(url, name, usedSkinType, saveToLibrary);
 }
 
-// Modified init function to fetch skins from server
+// Vote system functions
+
+// Function to vote for a skin
+function voteSkin(id) {
+    showLoading('Recording vote...');
+    
+    const formData = new FormData();
+    formData.append('id', id);
+    
+    // Send the vote request to the server
+    fetch('get-skins.php?action=vote', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        
+        if (data.success) {
+            // Update the vote count in the UI
+            const voteCountElements = document.querySelectorAll(`.vote-count[data-id="${id}"]`);
+            voteCountElements.forEach(element => {
+                element.textContent = data.votes;
+            });
+            
+            // Show success message
+            showMessage('success', 'Thanks for your vote!');
+            
+            // Disable the vote button to prevent multiple votes
+            const voteButtons = document.querySelectorAll(`.vote-button[data-id="${id}"]`);
+            voteButtons.forEach(button => {
+                button.disabled = true;
+                button.classList.add('voted');
+                button.innerHTML = '<i class="fas fa-check"></i>';
+            });
+            
+            // Store voted skin IDs in localStorage
+            storeVotedSkin(id);
+        } else {
+            showMessage('error', data.message || 'Failed to record vote.');
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        console.error('Error voting for skin:', error);
+        showMessage('error', 'An error occurred while voting.');
+    });
+}
+
+// Function to store voted skin IDs in localStorage
+function storeVotedSkin(id) {
+    // Get existing voted skin IDs
+    let votedSkins = localStorage.getItem('voted-skins');
+    votedSkins = votedSkins ? JSON.parse(votedSkins) : [];
+    
+    // Add current skin ID if not already voted
+    if (!votedSkins.includes(id)) {
+        votedSkins.push(id);
+    }
+    
+    // Save back to localStorage
+    localStorage.setItem('voted-skins', JSON.stringify(votedSkins));
+}
+
+// Function to check if a skin has been voted
+function hasVotedForSkin(id) {
+    // Get existing voted skin IDs
+    let votedSkins = localStorage.getItem('voted-skins');
+    votedSkins = votedSkins ? JSON.parse(votedSkins) : [];
+    
+    // Check if current skin ID is in the list
+    return votedSkins.includes(id);
+}
+
+// Updated function to create community skin items with voting
+function updateCommunityPresets() {
+    const communityGrid = document.getElementById('community-grid');
+    if (!communityGrid) return;
+    
+    communityGrid.innerHTML = '';
+    
+    // Add sort controls
+    const sortingControls = document.createElement('div');
+    sortingControls.className = 'sorting-controls mb-3';
+    sortingControls.innerHTML = `
+        <div class="btn-group" role="group" aria-label="Sort skins">
+            <button type="button" class="btn btn-outline-primary active" id="sort-newest">
+                <i class="fas fa-clock me-1"></i> Newest
+            </button>
+            <button type="button" class="btn btn-outline-primary" id="sort-popular">
+                <i class="fas fa-fire me-1"></i> Most Popular
+            </button>
+        </div>
+    `;
+    communityGrid.appendChild(sortingControls);
+    
+    // Add event listeners for sorting
+    document.getElementById('sort-newest').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('sort-popular').classList.remove('active');
+        fetchSkins('community'); // Default sorting by date
+    });
+    
+    document.getElementById('sort-popular').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('sort-newest').classList.remove('active');
+        fetchSkins('community', 'votes');
+    });
+    
+    // Create container for skin items
+    const skinsContainer = document.createElement('div');
+    skinsContainer.className = 'preset-grid';
+    skinsContainer.id = 'community-skins-container';
+    communityGrid.appendChild(skinsContainer);
+    
+    // Filter community skins
+    const communitySkins = textureLibrary.filter(texture => 
+        texture.category === 'community'
+    );
+    
+    if (communitySkins.length === 0) {
+        skinsContainer.innerHTML = `
+            <div class="alert alert-info w-100 text-center">
+                No community skins available yet. Upload your own to get started!
+            </div>
+        `;
+        return;
+    }
+    
+    communitySkins.forEach(skin => {
+        const div = document.createElement('div');
+        div.className = 'preset-item';
+        
+        // Check if user has already voted
+        const hasVoted = hasVotedForSkin(skin.id);
+        const voteCount = skin.votes || 0;
+        
+        div.innerHTML = `
+            <img src="${skin.url}" alt="${skin.name}">
+            <div class="preset-name">${skin.name}</div>
+            <div class="preset-author">by ${skin.author || 'Unknown'}</div>
+            <div class="vote-container mt-2">
+                <span class="vote-count" data-id="${skin.id}">${voteCount}</span>
+                <button class="vote-button btn btn-sm btn-outline-primary${hasVoted ? ' voted' : ''}" data-id="${skin.id}" ${hasVoted ? 'disabled' : ''}>
+                    ${hasVoted ? '<i class="fas fa-check"></i>' : '<i class="fas fa-thumbs-up"></i>'}
+                </button>
+            </div>
+        `;
+        
+        // Skin selection functionality
+        div.addEventListener('click', function(e) {
+            // Don't trigger skin selection if clicking the vote button
+            if (!e.target.closest('.vote-button')) {
+                // Remove active class from all items in this grid
+                skinsContainer.querySelectorAll('.preset-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                div.classList.add('active');
+                
+                // Store the current skin ID for submission
+                currentSkinId = skin.id;
+                
+                // Load the skin
+                loadSkin(skin.url, skin.skinType || 'default');
+            }
+        });
+        
+        // Add vote button functionality
+        const voteButton = div.querySelector('.vote-button');
+        voteButton.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent triggering the skin selection
+            voteSkin(skin.id);
+        });
+        
+        skinsContainer.appendChild(div);
+    });
+}
+
+// Add CSS for vote styling
+function addVotingStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .vote-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .vote-count {
+            font-weight: bold;
+            color: #3498db;
+            min-width: 25px;
+            text-align: center;
+        }
+        
+        .vote-button {
+            padding: 2px 8px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .vote-button:hover:not([disabled]) {
+            background-color: #3498db;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .vote-button.voted {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+        
+        .preset-item {
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+        
+        .preset-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .preset-author {
+            font-size: 10px;
+            color: #777;
+            margin-top: -5px;
+        }
+        
+        .sorting-controls {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Update the init function to add voting styles
 function init() {
     // Initialize variables
     currentSkinId = null;
@@ -2711,6 +3823,7 @@ function init() {
     initEventListeners();
     initCape();
     addSkinFormatControls();
+    addVotingStyles();
     
     // Fetch skins from server
     fetchSkins();
@@ -2720,6 +3833,47 @@ function init() {
     
     // Initialize skin format detection
     updateFormatInfo();
+}
+
+// Updated fetchSkins function to handle sorting
+function fetchSkins(category = null, sortBy = null) {
+    showLoading('Loading skins...');
+    
+    // Build URL with optional category filter and sorting
+    let url = 'get-skins.php?action=list';
+    if (category) {
+        url += `&category=${category}`;
+    }
+    if (sortBy) {
+        url += `&sort=${sortBy}`;
+    }
+    
+    // Fetch skins from the server
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        
+        if (data.success) {
+            // Store the skins in the texture library
+            textureLibrary = data.skins;
+            
+            // Update the UI
+            updateTextureList();
+            updateCommunityPresets();
+            updateOfficialPresets();
+        } else {
+            console.warn('No skins found:', data.message);
+            textureLibrary = [];
+            updateTextureList();
+            updateCommunityPresets();
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        console.error('Error fetching skins:', error);
+        showMessage('error', 'An error occurred while fetching skins.');
+    });
 }
 
 // Call init when the page loads
@@ -2748,6 +3902,6 @@ window.addEventListener('DOMContentLoaded', init);
         
         // Initialize everything when the page loads
         window.addEventListener('DOMContentLoaded', init);
-    </script>
+</script>
 </body>
 </html>

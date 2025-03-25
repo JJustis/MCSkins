@@ -30,10 +30,21 @@ switch ($action) {
                 });
             }
             
-            // Sort by date (newest first)
-            usort($metadata, function($a, $b) {
-                return strtotime($b['date']) - strtotime($a['date']);
-            });
+            // Sort by date (newest first) or by votes if requested
+            $sortBy = isset($_GET['sort']) ? $_GET['sort'] : 'date';
+            
+            if ($sortBy === 'votes') {
+                usort($metadata, function($a, $b) {
+                    // Get votes, default to 0 if not set
+                    $votesA = isset($a['votes']) ? $a['votes'] : 0;
+                    $votesB = isset($b['votes']) ? $b['votes'] : 0;
+                    return $votesB - $votesA; // Sort by votes descending
+                });
+            } else {
+                usort($metadata, function($a, $b) {
+                    return strtotime($b['date']) - strtotime($a['date']);
+                });
+            }
             
             $response['success'] = true;
             $response['skins'] = array_values($metadata); // Reset array indices
@@ -158,6 +169,57 @@ switch ($action) {
         }
         break;
         
+    case 'vote':
+        // Get skin ID
+        $id = isset($_POST['id']) ? $_POST['id'] : null;
+        
+        if ($id === null) {
+            $response['message'] = 'No skin ID provided.';
+            break;
+        }
+        
+        // Check if metadata file exists
+        if (!file_exists($metadataFile)) {
+            $response['message'] = 'No skins found.';
+            break;
+        }
+        
+        // Get metadata
+        $metadata = json_decode(file_get_contents($metadataFile), true);
+        
+        // Find the skin to update
+        $skinIndex = null;
+        
+        foreach ($metadata as $index => $skin) {
+            if ($skin['id'] === $id) {
+                $skinIndex = $index;
+                break;
+            }
+        }
+        
+        if ($skinIndex === null) {
+            $response['message'] = 'Skin not found.';
+            break;
+        }
+        
+        // Initialize votes if not set
+        if (!isset($metadata[$skinIndex]['votes'])) {
+            $metadata[$skinIndex]['votes'] = 0;
+        }
+        
+        // Increment vote count
+        $metadata[$skinIndex]['votes']++;
+        
+        // Save updated metadata
+        if (file_put_contents($metadataFile, json_encode($metadata))) {
+            $response['success'] = true;
+            $response['message'] = 'Vote recorded successfully.';
+            $response['votes'] = $metadata[$skinIndex]['votes'];
+        } else {
+            $response['message'] = 'Failed to update metadata.';
+        }
+        break;
+        
     case 'submit':
         // Handling submission to community library (changing category)
         $id = isset($_POST['id']) ? $_POST['id'] : null;
@@ -193,6 +255,9 @@ switch ($action) {
         
         // Update category to community
         $metadata[$skinIndex]['category'] = 'community';
+        
+        // Initialize votes to 0
+        $metadata[$skinIndex]['votes'] = 0;
         
         // Update other fields if provided
         if (isset($_POST['name']) && !empty($_POST['name'])) {
